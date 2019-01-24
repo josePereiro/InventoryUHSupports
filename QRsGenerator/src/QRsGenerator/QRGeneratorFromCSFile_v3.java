@@ -50,11 +50,15 @@ public class QRGeneratorFromCSFile_v3 {
         scanner.reset();
 
         //Generating QRs
-        generateQrs();
+        try {
+            generateQrs();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
-    private static void generateQrs() {
+    private static void generateQrs() throws Exception {
 
         for (Point format : formats) {
             int formatColumnCount = format.x;

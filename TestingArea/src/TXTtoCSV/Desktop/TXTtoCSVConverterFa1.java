@@ -32,8 +32,8 @@ public class TXTtoCSVConverterFa1 {
 
         //Loading txtFileData file
 
-        String rootPath = "/home/pereiro/MyData/University/Projects/Biología/Programs/InventarioUH/Files/";
-        String txtFileName = "activos_fijos_list_centro_costo 2041 pdf 7-12-18.txt";
+        String rootPath = "/Users/Pereiro/Downloads/";
+        String txtFileName = "activos_fijos_list_centro_costo 2041 pdf 10-1-19.txt";
         File txtFile = new File(rootPath + File.separator + txtFileName);
         ArrayList<String> txtFileData;
         try {
