@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="BuiltIn">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../MyJavaTools/out/artifacts/BuiltIn_jar/BuiltIn.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
