@@ -1,9 +1,9 @@
 package QRsGenerator;
 
-import BuiltIn.FileTools;
-import BuiltIn.ImageTools;
 import CSVFile.CSVFile;
-import QRCode.QRCodeTools;
+import MyJavaTools.FileTools;
+import MyJavaTools.ImageTools;
+import MyQRTools.QRCodeTools;
 import com.google.zxing.WriterException;
 
 import javax.imageio.ImageIO;
@@ -160,7 +160,7 @@ public class QRGeneratorFromCSFile_v3 {
             csvFile = new File("/Users/Pereiro/Documents/Inventory_UH_Test_File_Tue_Jan_01_16_10_25_EST_2019.csv");
             csvFileReader = new CSVFile.InventoryUH.Reader(csvFile);
             System.out.println("Archivo cargado y compatible, " + (csvFileReader.getLineCount() - 1) + " números detectados!!!");
-        } catch (IOException | CSVFile.CorruptedFileException ignored) {
+        } catch (IOException | CSVFile.CorruptedFileException | CSVFile.BrokenDataException ignored) {
             ignored.printStackTrace();
         }
     }

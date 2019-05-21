@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="QRCode">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../MyJavaTools/out/artifacts/QRCode_jar/QRCode.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

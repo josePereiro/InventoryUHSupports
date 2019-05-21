@@ -8,7 +8,6 @@
     <orderEntry type="jdk" jdkName="1.8.0_191" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="core" level="project" />
-    <orderEntry type="library" name="BuiltIn" level="project" />
-    <orderEntry type="library" name="QRCode" level="project" />
+    <orderEntry type="library" name="MyJavaTools" level="project" />
   </component>
 </module>

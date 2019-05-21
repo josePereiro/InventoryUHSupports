@@ -1,6 +1,6 @@
 package CSVFile;
 
-import BuiltIn.FileTools;
+import MyJavaTools.FileTools;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,42 +20,46 @@ public abstract class CSVFile {
             private ArrayList<String> data;
             private int hashCode;
 
-            public Reader(File file) throws IOException, CorruptedFileException {
+            public Reader(File file) throws IOException, CorruptedFileException, BrokenDataException {
 
                 data = FileTools.readTextFile(file);
-                if (!Tools.checkDataSign(data) || !Tools.checkDataFormat(data)) {
-                    throw new CorruptedFileException("The file has not a right " +
-                            "format or is corrupted!!!");
-                }
+                Tools.checkDataSign(data);
+                Tools.checkDataFormat(data);
                 hashCode = Tools.getFileHashCode(data);
             }
 
             /**
-             * Returns all the numbers in the file.
-             *
-             * @return
+             * @return An arrayList containing all the numbers of the file.
              */
             public ArrayList<String> getNumbers() {
                 return getColumn(Format.NUMBER_INDEX);
             }
 
             /**
-             * This returns the description field of each number
-             *
-             * @return
+             * @return An arrayList containing all the descriptions of the file.
              */
             public ArrayList<String> getDescriptions() {
                 return getColumn(Format.DESCRIPTION_INDEX);
             }
 
             /**
-             * This returns the area field of each number
-             *
-             * @return
+             * @return An arrayList containing all the alta dates of the file.
+             */
+            public ArrayList<String> getAltaDates() {
+                return getColumn(Format.ALTA_INDEX);
+            }
+
+            /**
+             * @return An arrayList containing all the areas of the file.
              */
             public ArrayList<String> getAreas() {
                 return getColumn(Format.AREA_INDEX);
             }
+
+            /**
+             * @return An arrayList containing all the update dates of the file.
+             */
+            public ArrayList<String> getUpdateDate(){return getColumn(Format.UPDATE_INDEX);}
 
             public int getHashCode() {
                 return hashCode;
@@ -106,16 +110,8 @@ public abstract class CSVFile {
              */
             public static void signData(ArrayList<String> data) throws BrokenDataException {
 
-                //Checking column length
-                String[] lineValues;
-                for (int line = 0; line < data.size(); line++) {
-                    lineValues = data.get(line).split(",", -1);
-                    if (lineValues.length != Format.COLUMN_COUNT) {
-                        throw new BrokenDataException("The data is broken in line: " + line +
-                                "\nThe data has " + lineValues.length + " columns and should have " +
-                                Format.COLUMN_COUNT);
-                    }
-                }
+                //Checking data format
+                Tools.checkDataFormat(data);
 
                 //Hash
                 int hashCode = Tools.getDataHashCode(data, 0);
@@ -137,21 +133,21 @@ public abstract class CSVFile {
         /**
          * Have all the features of the format of the InventoryUH csvFile
          */
-        public static class Format {
+        private static class Format {
 
-            public static final int META_DATA_LINE_INDEX = 0;
-            public static final int HASH_CODE_INDEX = 1;
-            public static final int HEAD_INDEX = 0;
-            public static final int FIRST_DATA_LINE_INDEX = 1;
-            public static final int COLUMN_COUNT = 5;
+            static final int META_DATA_LINE_INDEX = 0;
+            static final int HASH_CODE_INDEX = 1;
+            static final int HEAD_INDEX = 0;
+            static final int FIRST_DATA_LINE_INDEX = 1;
+            static final int COLUMNS_COUNT = 5;
 
-            public static final int NUMBER_INDEX = 0;
-            public static final int DESCRIPTION_INDEX = 1;
-            public static final int AREA_INDEX = 2;
-            public static final int ALTA_INDEX = 3;
-            public static final int UPDATE_INDEX = 4;
+            static final int NUMBER_INDEX = 0;
+            static final int DESCRIPTION_INDEX = 1;
+            static final int AREA_INDEX = 2;
+            static final int ALTA_INDEX = 3;
+            static final int UPDATE_INDEX = 4;
 
-            public static final String UH_INVENTORY_FILE_HEAD_CODE = "Archivo UH para importar...";
+            static final String UH_INVENTORY_FILE_HEAD_CODE = "Archivo UH para importar...";
 
 
             /**
@@ -161,30 +157,32 @@ public abstract class CSVFile {
              * for single ones and spaces at the beginning or at the en are eliminated.
              * To keep some track of changes, any other no legal char are
              * changed by '_'.
+             *
              * @param data the virgin data
              * @return the data with some changes :)
              */
-            public static final String formatData(String data){
-                return data.replaceAll(",",".").
-                        replaceAll(" {2,}"," ").
+            public static String formatData(String data) {
+                return data.replaceAll(",", ".").
+                        replaceAll(" {2,}", " ").
                         replaceAll("^ ", "").
-                        replaceAll(" $","").
+                        replaceAll(" $", "").
                         toUpperCase().
-                        replaceAll("[^A-Z0-9_\\-\\. /]","_");
+                        replaceAll("[^A-Z0-9_\\-\\. /]", "_");
             }
 
             /**
              * This just change the data a little bet to be compatible with csv files...
              * Changes ',' by '.' and eliminate the extra spaces!!!
              * This format is not save for the inventory UH app
+             *
              * @param data
              * @return
              */
-            public static final String readebleFormatData(String data){
-                return data.replaceAll(",",".").
-                        replaceAll(" {2,}"," ").
+            static String readableFormatData(String data) {
+                return data.replaceAll(",", ".").
+                        replaceAll(" {2,}", " ").
                         replaceAll("^ ", "").
-                        replaceAll(" $","").
+                        replaceAll(" $", "").
                         toUpperCase();
             }
 
@@ -234,7 +232,7 @@ public abstract class CSVFile {
             private static Pattern areaLinePattern = Pattern.compile("(Area de Responsabilidad:)([ ]+)([0-9]+-?[0-9]+)( - )(?<area>[[^ ]+[ ]+]*[^ ]+)");
 
 
-            public static void main(String[] args) throws IOException {
+            public static void main(String[] args) {
 
                 //Selecting File
                 printInfoAndWait("Welcome to ta TxtToCsv inventory converter_v3.5.\n" +
@@ -306,7 +304,7 @@ public abstract class CSVFile {
                                     break;
                                 }
 
-                                if (bottomLine1Pattern.matcher(line).matches() || bottomLine2Pattern.matcher(line).matches()){
+                                if (bottomLine1Pattern.matcher(line).matches() || bottomLine2Pattern.matcher(line).matches()) {
                                     System.out.println(li + ": bottoms lines detected: " + line.replaceAll(" ", "_"));
                                     break;
                                 }
@@ -327,15 +325,15 @@ public abstract class CSVFile {
                             } while (true);
 
                             //Adding dates
-                            String csvLine = Format.readebleFormatData(number) +
+                            String csvLine = Format.readableFormatData(number) +
                                     "," +
-                                    Format.readebleFormatData(description) +
+                                    Format.readableFormatData(description) +
                                     "," +
-                                    Format.readebleFormatData(area) +
+                                    Format.readableFormatData(area) +
                                     "," +
-                                    Format.readebleFormatData(alta) +
+                                    Format.readableFormatData(alta) +
                                     "," +
-                                    Format.readebleFormatData(update);
+                                    Format.readableFormatData(update);
                             System.out.println();
                             if (number.equals("") || description.equals("") ||
                                     area.equals("") || alta.equals("") || update.equals("")) {
@@ -428,7 +426,7 @@ public abstract class CSVFile {
         }
     }
 
-    public static class Tools {
+    private static class Tools {
 
         /**
          * Produce the custom hash code. I use my own for cross platform compatibility.
@@ -436,7 +434,7 @@ public abstract class CSVFile {
          * @param s
          * @return
          */
-        public static int myStringHashCode(String s) {
+        private static int myStringHashCode(String s) {
             int hash = 0;
             for (int i = 0; i < s.length(); i++) {
                 hash += s.charAt(i) * 31 ^ (s.length() - i + 1);
@@ -451,24 +449,33 @@ public abstract class CSVFile {
          * @param csvFileData the lines of the csv file
          * @return true if everything if ok
          */
-        public static boolean checkDataSign(ArrayList<String> csvFileData) {
+        private static void checkDataSign(ArrayList<String> csvFileData) throws CorruptedFileException {
             try {
-                return getDataHashCode(csvFileData, InventoryUH.Format.FIRST_DATA_LINE_INDEX) == getFileHashCode(csvFileData) &&
-                        getFileHead(csvFileData).equals(InventoryUH.Format.UH_INVENTORY_FILE_HEAD_CODE);
+                if (!(getDataHashCode(csvFileData, InventoryUH.Format.FIRST_DATA_LINE_INDEX) == getFileHashCode(csvFileData) &&
+                        getFileHead(csvFileData).equals(InventoryUH.Format.UH_INVENTORY_FILE_HEAD_CODE)))
+                    throw new CorruptedFileException("The file has not a right " +
+                            "format or is corrupted!!!");
             } catch (Exception e) {
-                return false;
+                throw new CorruptedFileException("The file has not a right " +
+                        "format or is corrupted!!!");
             }
         }
 
-        public static boolean checkDataFormat(ArrayList<String> csvFileData) {
+        /**
+         * Check if the data in the csvFile is in the proper format
+         *
+         * @param csvFileData
+         * @return
+         */
+        private static void checkDataFormat(ArrayList<String> csvFileData) throws BrokenDataException {
 
             for (int line = InventoryUH.Format.FIRST_DATA_LINE_INDEX; line < csvFileData.size(); line++) {
-                if (csvFileData.get(line).split(",", -1).length != InventoryUH.Format.COLUMN_COUNT) {
-                    return false;
+                if (csvFileData.get(line).split(",", -1).length != InventoryUH.Format.COLUMNS_COUNT) {
+                    throw new BrokenDataException("The data is broken in line: " + line +
+                            " No proper data count in this line!!!. Proper data count " +
+                            InventoryUH.Format.COLUMNS_COUNT);
                 }
             }
-            return true;
-
         }
 
         /**
@@ -516,19 +523,17 @@ public abstract class CSVFile {
 
     public static class CorruptedFileException extends Exception {
 
-        public CorruptedFileException(String ms) {
+        CorruptedFileException(String ms) {
             super(ms);
         }
     }
 
     public static class BrokenDataException extends Exception {
 
-        public BrokenDataException(String ms) {
+        BrokenDataException(String ms) {
             super(ms);
         }
     }
-
-
 
 
 }
